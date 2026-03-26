@@ -43,7 +43,7 @@ go build ./cmd/sub2api-cli
   --api-key admin-xxxxxxxx \
   --group-id 12 \
   --group-id 18 \
-  --concurrency 1
+  --concurrency 10
 ```
 
 What it does:
@@ -71,7 +71,7 @@ What it does:
 - `--name`: Optional account name override
 - `--group-id`: Bind to one or more groups. Repeat the flag or pass comma-separated IDs.
 - `--proxy-id`: Optional Sub2API proxy ID
-- `--concurrency`: Account concurrency, defaults to `1`
+- `--concurrency`: Account concurrency, defaults to `10`
 - `--priority`: Account priority, defaults to `0`
 - `--redirect-url`: Local callback URL, defaults to `http://localhost:1455/auth/callback`
 - `--no-open`: Do not auto-open the browser

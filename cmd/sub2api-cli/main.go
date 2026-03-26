@@ -51,7 +51,7 @@ func main() {
 		name        = flag.String("name", "", "Account name override; defaults to OAuth email")
 		redirectURL = flag.String("redirect-url", "http://localhost:1455/auth/callback", "Local OAuth callback URL")
 		proxyID     = flag.Int64("proxy-id", -1, "Optional Sub2API proxy ID")
-		concurrency = flag.Int("concurrency", 1, "Account concurrency")
+		concurrency = flag.Int("concurrency", 10, "Account concurrency")
 		priority    = flag.Int("priority", 0, "Account priority")
 		noOpen      = flag.Bool("no-open", false, "Do not auto-open the browser")
 	)
