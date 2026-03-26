@@ -1,6 +1,6 @@
 # sub2api-cli
 
-`sub2api-cli` is a standalone interactive CLI for importing OpenAI OAuth accounts into Sub2API.
+`sub2api-cli` is a standalone CLI for importing OpenAI OAuth accounts into Sub2API.
 
 It reuses the existing Sub2API admin endpoints:
 
@@ -9,7 +9,26 @@ It reuses the existing Sub2API admin endpoints:
 
 Current version authenticates with `x-api-key`, so the supplier needs a valid Sub2API admin API key.
 
-## Build
+## Download
+
+The primary distribution path is the rolling pre-release on GitHub:
+
+- Open the [Releases page](https://github.com/mise42/sub2api-cli/releases)
+- Download the latest `Latest Dev Build` package for your platform
+- Extract it and run the binary directly
+
+Current build targets:
+
+- `sub2api-cli_darwin_amd64.zip` for macOS Intel
+- `sub2api-cli_darwin_arm64.zip` for macOS Apple Silicon
+- `sub2api-cli_windows_amd64.zip` for Windows x64
+
+After extraction:
+
+- macOS: run `./sub2api-cli`
+- Windows: run `sub2api-cli.exe`
+
+## Build From Source
 
 ```bash
 cd /Users/mise42/Work/untrusted/sub2api-suite/sub2api-cli
@@ -33,8 +52,16 @@ What it does:
 2. Requests an OAuth URL from Sub2API
 3. Opens the browser automatically
 4. Waits for the OAuth callback locally
-5. Calls `create-from-oauth`
-6. Prints the created account as JSON
+5. Receives the callback locally
+6. Calls `create-from-oauth` on your online Sub2API server
+7. Prints the created account as JSON
+
+## Requirements
+
+- A reachable Sub2API server URL
+- A valid Sub2API `admin x-api-key`
+- A local browser environment that can open the OAuth page
+- Permission to bind the new account to any `group-id` or `proxy-id` you pass
 
 ## Flags
 
@@ -60,3 +87,5 @@ What it does:
 - The callback server is local only and exits after the flow completes.
 - If the browser cannot be opened automatically, the CLI prints the OAuth URL for manual opening.
 - This project is intentionally standalone and does not import code from the main `sub2api` repository.
+- `group-id` binds the imported account to one or more existing Sub2API groups.
+- `proxy-id` selects an existing Sub2API proxy record for the OAuth flow and resulting account.

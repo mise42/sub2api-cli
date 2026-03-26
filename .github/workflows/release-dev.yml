@@ -1,0 +1,89 @@
+name: Release Dev Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: darwin
+            goarch: amd64
+            ext: ""
+          - goos: darwin
+            goarch: arm64
+            ext: ""
+          - goos: windows
+            goarch: amd64
+            ext: ".exe"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build binary
+        env:
+          CGO_ENABLED: "0"
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          mkdir -p dist
+          BIN="sub2api-cli${{ matrix.ext }}"
+          go build -trimpath -ldflags="-s -w" -o "dist/${BIN}" ./cmd/sub2api-cli
+
+      - name: Package archive
+        run: |
+          BIN="sub2api-cli${{ matrix.ext }}"
+          ARCHIVE="sub2api-cli_${{ matrix.goos }}_${{ matrix.goarch }}.zip"
+          cd dist
+          zip -j "../${ARCHIVE}" "${BIN}"
+
+      - name: Upload packaged artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.goos }}-${{ matrix.goarch }}
+          path: sub2api-cli_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+          if-no-files-found: error
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish rolling pre-release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest-dev
+          name: Latest Dev Build
+          prerelease: true
+          allowUpdates: true
+          replacesArtifacts: true
+          removeArtifacts: true
+          artifacts: release-assets/*.zip
+          body: |
+            Rolling pre-release for the latest commit on `main`.
+
+            Download the archive for your platform:
+            - macOS Intel: `sub2api-cli_darwin_amd64.zip`
+            - macOS Apple Silicon: `sub2api-cli_darwin_arm64.zip`
+            - Windows x64: `sub2api-cli_windows_amd64.zip`
